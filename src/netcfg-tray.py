@@ -13,7 +13,24 @@ except ImportError:
 profile_dir="/etc/network.d"
 state_dir="/var/run/network/profiles"
 helper_cmd="./netcfg-tray-helper"
-config_file=os.path.expanduser(os.path.join("~/",os.environ["XDG_CONFIG_HOME"],"netcfg-tray/config"))
+
+# create a list of user and system wide configs
+config_list = [os.path.join(os.environ["XDG_CONFIG_HOME"], "netcfg-tray/config")]
+for xdg_path in os.environ["XDG_CONFIG_DIRS"]:
+    config_list.append(os.path.join(xdg_path, "netcfg-tray/config"))
+
+# get the first valid config file
+config_file = None
+for config in config_list:
+    if os.path.isfile(config):
+        config_file = config
+        break
+
+# if we can't find a configuration exit
+if config_file is None:
+    print "Cannot find configuration file. Bye"
+    sys.exit(1)
+
 print config_file
 license_file="/usr/share/licenses/netcfg-tray/LICENSE"
 TRAY_VERSION=3
