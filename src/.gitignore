@@ -1,0 +1,10 @@
+# vim files
+*.swp
+*.swo
+
+# python byte-code
+*.pyc
+
+# backup stuff
+*.bak
+
