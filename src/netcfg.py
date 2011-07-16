@@ -1,81 +1,91 @@
-# netcfg interface...
-import os.path
+# -*- coding: utf-8 -*-
+
 import os
 import subprocess
 
-helper_cmd="/usr/bin/netcfg-tray-helper"
-profile_dir="/etc/network.d/"
-state_dir="/var/run/network/profiles/"
+# default paths
+PROFILE_DIR = '/etc/network.d'
+STATE_DIR = '/var/run/network/profiles'
+NETCFG_BIN = '/usr/bin/netcfg'
 
 
-def read_config(config):
-    import shlex
-    cfg = shlex.split(open(config, "r").read())
-    options = {}
-    for line in cfg:
-        (var, delim, value) = line.partition('=')  
-        if delim and var.lstrip()[0] != "#":
-            options[var] = value
-    return options
+class Netcfg:
+    def __init__(self, profile_dir=PROFILE_DIR,
+                        state_dir=STATE_DIR,
+                        netcfg_bin=NETCFG_BIN):
+        # paths
+        self._profile_dir = profile_dir
+        self._state_dir = state_dir
+        self._bin = netcfg_bin
+        # profile list
+        self.profiles = []
+
+        # netcfg arguments
+        self.ncargs = { "up":        "-u",
+                        "down":      "-d",
+                        "reconnect": "-r" }
+
+        self.get_profiles()
 
 
-def read_rcconf(variable):
-    rc=open("/etc/rc.conf")
-    for line in rc.readlines():
-        line=line.strip()
-        if line[:len(variable)] == variable:
-            key,val=line.split("=",1)
-            return val.strip("'\"")
+    def get_profiles(self):
+        """scan profile dir and store profile names"""
+        profiles = os.listdir(self._profile_dir)
 
-def get_profiles():
-    profs= [Profile(x) for x in os.listdir(profile_dir) if not os.path.isdir(os.path.join(profile_dir,x)) ]   
-    return [x for x in profs if x.has_key("CONNECTION")]
-   
-   
-def get_active_profiles():
-    profs=[Profile(x) for x in os.listdir(state_dir) if not os.path.isdir(os.path.join(state_dir,x)) ]   
-    return [x for x in profs if x.has_key("CONNECTION")]
-    
-    
-def is_profile(profile):
-    return os.path.isfile(os.path.join(profile_dir, profile))
+        for profile in profiles:
+            full_path = os.path.join(self._profile_dir, profile)
+
+            if os.path.isfile(full_path):
+                # TODO: check if every profile has "CONNECTION"
+                # check for "CONNECTION" string to ensure it is a profile file
+                self.profiles.append(profile)
 
 
-def up(profile, cmd=None, block=True, check=False):
-    return run("up", profile, cmd, block, check)
+    def get_current(self):
+        """get current profile name from state dir"""
+        profile = os.listdir(self._state_dir)
+        if profile:
+            return profile
 
-    
-def down(profile, cmd=None, block=True, check=False):
-    return run("down", profile, cmd, block, check)
-
-
-def run(func, profile, cmd=None, block=True, check=False):
-    script = [helper_cmd, func, profile.name]
-    if cmd:
-        script.insert(0, cmd)
-    process = subprocess.Popen(script, stdout=subprocess.PIPE)
-    if block:
-        process.wait()
-    return process    
-    
-
-def auto_status(connection):
-    return os.access("/var/run/daemons/net-auto-"+connection, os.F_OK)
-       
-
-def auto_interface(connection):
-    
-    return read_rcconf(connection.upper()+"_INTERFACE")
-
-    
-class Profile (dict):
-
-    def __init__(self,profile_name):
-        self.name=profile_name
-        self.filename=os.path.join(profile_dir, profile_name)
-        self.update(read_config(self.filename))
-
-    def active(self):
-        return os.path.isfile(os.path.join(state_dir,self.name))
+        return None
 
 
+    def up(self, profile, block=True, prefix=None):
+        """profile up"""
+        command = [self._bin, self,ncargs['up'], profile]
+        if prefix:
+            command.insert(0, prefix)
+        return self._run_command(command, block)
+
+
+    def down(self, profile, block=True, prefix=None):
+        """profile down"""
+        command = [self._bin, self.ncargs["down"], profile]
+        if prefix:
+            command.insert(0, prefix)
+        return self._run_command(command, block)
+
+
+    def reconnect(self, block=True, prefix=None):
+        """disconnect and reconnect current profile"""
+        profile = self.get_current()
+        if profile is None:
+            return False
+
+        command = [self._bin, self.ncargs["reconnect"], profile]
+        if prefix:
+            command.insert(0, prefix)
+        return self._run_command(command, block)
+
+
+    def _run_command(self, command, block):
+        process = subprocess.Popen(command, stdout=subprocess.PIPE)
+        if block is True:
+            process.wait()
+        return process
+
+
+if __name__ == '__main__':
+    pass
+
+# vim: set sw=4 ts=4 sts=4 et:
