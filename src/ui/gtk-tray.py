@@ -242,5 +242,6 @@ class NetcfgTray (object):
         gtk.main_quit()
 
 if __name__ == '__main__':
-    tray = NetcfgTray()
-    gtk.main()
+    print "This file is not intented to run as standalone application, bye"
+    sys.exit(1)
+
