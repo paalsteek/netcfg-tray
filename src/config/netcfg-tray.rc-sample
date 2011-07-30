@@ -3,17 +3,17 @@
 
 [main]
 root_cmd=gksudo
+gui=gtk
 # Configure sudo to allow passwordless /usr/bin/netcfg-tray-helper then use the below for passwordless configuration
 # root_cmd=sudo 
 
 [notify]
-
 # notify= ?
 #   libnotify (depends pynotify/notification-daemon)
 #   dzen (depends dzen2)
 #   external (Set external_cmd to an external command)
 #   none (prints to stdout)
-
-notify=libnotify
+notify=0
+notify_lib=libnotify
 external_cmd=xterm -e 
 dzen_args=-p 2
