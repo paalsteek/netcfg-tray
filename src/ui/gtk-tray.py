@@ -5,6 +5,9 @@ import os, os.path, subprocess, sys
 import netcfg
 import ConfigParser, pdb
 
+#license_file="/usr/share/licenses/netcfg-tray/LICENSE"
+#TRAY_VERSION=3
+
 try:
     import pynotify
 except ImportError:
