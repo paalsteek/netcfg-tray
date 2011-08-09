@@ -138,13 +138,32 @@ cfg_filename = 'config/netcfg-tray.rc-sample' # dev file
 #config = parse_cfg_file(get_cfg_file(cfg_filename), config)
 config = parse_cfg_file(cfg_filename, config)
 config = override_from_command_line(args, config)
-print config
+print config # debug
 
 
 if __name__ == '__main__':
-    pass #DEBUG
+    # import gtk or qt tray
+    if config['gui'] == 'gtk':
+        try:
+            from ui import gtk_tray as gui
+        except ImportError:
+            print 'Error importing tray application'
+            sys.exit(1)
+    else:
+        raise NotImplementedError
+        sys.exit(1)
+
+    # import netcfg lib
+    try:
+        from netcfg import Netcfg
+    except:
+        print 'Error importing netcfg library'
+        sys.exit(1)
+
+
+    sys.exit(0)# debug
     netcfg = Netcfg()
-    tray = NetcfgTray(netcfg, config)
+    tray = gui.NetcfgTray(netcfg, config)
     gtk.main()
 
 # vim: ts=4 sts=4 et:
