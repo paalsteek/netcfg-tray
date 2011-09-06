@@ -5,7 +5,7 @@ import subprocess
 
 helper_cmd="/usr/bin/netcfg-tray-helper"
 profile_dir="/etc/network.d/"
-state_dir="/var/run/network/profiles/"
+state_dir="/run/network/profiles/"
 
 
 def read_config(config):

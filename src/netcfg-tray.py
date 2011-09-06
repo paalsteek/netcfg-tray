@@ -11,7 +11,7 @@ except ImportError:
     pynotify=False
     
 profile_dir="/etc/network.d"
-state_dir="/var/run/network/profiles"
+state_dir="/run/network/profiles"
 helper_cmd="./netcfg-tray-helper"
 
 # create a list of user and system wide configs
