@@ -1,5 +1,5 @@
-#!/usr/bin/env python2
-
+#!/usr/bin/env python
+ 
 import gtk, pygtk, gobject
 import os, os.path, subprocess, sys
 import netcfg
@@ -97,8 +97,6 @@ class NetcfgTray (object):
         for connection in ["wireless","wired"]: 
             try:
                 interface=netcfg.auto_interface(connection)
-                if interface is None:
-                    raise KeyError
             except KeyError:
                 return
 
