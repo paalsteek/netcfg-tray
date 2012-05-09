@@ -1,0 +1,2 @@
+#/usr/bin/env bash
+python2 /usr/share/pyshared/netcfg-tray-git-20120509-1/netcfg-tray.py

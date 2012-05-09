@@ -97,9 +97,6 @@ class NetcfgTray (object):
         for connection in ["wireless","wired"]: 
             try:
                 interface=netcfg.auto_interface(connection)
-                interface=netcfg.auto_interface(connection)
-                if interface is None:
-                    raise KeyError
             except KeyError:
                 return
 
