@@ -12,7 +12,7 @@ except ImportError:
     
 profile_dir="/etc/network.d"
 state_dir="/run/network/profiles"
-helper_cmd="./netcfg-tray-helper"
+helper_cmd="netcfg-tray-helper"
 
 # create a list of user and system wide configs
 config_list = [os.path.join(os.environ["XDG_CONFIG_HOME"], "netcfg-tray/config")]

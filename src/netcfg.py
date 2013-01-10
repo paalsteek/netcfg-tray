@@ -3,7 +3,7 @@ import os.path
 import os
 import subprocess
 
-helper_cmd="/usr/bin/netcfg-tray-helper"
+helper_cmd="netcfg-tray-helper"
 profile_dir="/etc/network.d/"
 state_dir="/run/network/profiles/"
 
