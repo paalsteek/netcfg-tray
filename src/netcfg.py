@@ -83,6 +83,9 @@ class Profile (dict):
         self.filename=os.path.join(profile_dir, profile_name)
         self.active=False
 
+    def __str__(self):
+        return self.name
+
     def set_active(self, active):
         self.active=active
 
