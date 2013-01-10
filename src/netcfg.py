@@ -7,6 +7,7 @@ helper_cmd="netcfg-tray-helper"
 profile_dir="/etc/network.d/"
 state_dir="/run/network/profiles/"
 
+profiles=dict()
 
 def read_config(config):
     import shlex
@@ -30,20 +31,24 @@ def read_rcconf(variable):
             key,val=line.split("=",1)
             return val.strip("'\"")
 
+def update_profiles():
+    process = subprocess.Popen(["netcfg", "list"], stdout=subprocess.PIPE)
+    for prof in process.communicate()[0].split():
+      profiles[prof] = Profile(prof)
+    process = subprocess.Popen(["netcfg", "current"], stdout=subprocess.PIPE)
+    for prof in process.communicate()[0].split():
+      profiles[prof].set_active(True)
+
 def get_profiles():
-    profs= [Profile(x) for x in os.listdir(profile_dir) if not os.path.isdir(os.path.join(profile_dir,x)) ]   
-    return [x for x in profs if x.has_key("CONNECTION")]
+    return profiles.values()
    
    
 def get_active_profiles():
-    profs=[Profile(x) for x in os.listdir(state_dir) if not os.path.isdir(os.path.join(state_dir,x)) ]   
-    return [x for x in profs if x.has_key("CONNECTION")]
+    return filter(Profile.active, profiles.values())
     
+def get_inactive_profiles():
+    return filter(Profile.inactive, profiles.values())
     
-def is_profile(profile):
-    return os.path.isfile(os.path.join(profile_dir, profile))
-
-
 def up(profile, cmd=None, block=True, check=False):
     return run("up", profile, cmd, block, check)
 
@@ -76,9 +81,15 @@ class Profile (dict):
     def __init__(self,profile_name):
         self.name=profile_name
         self.filename=os.path.join(profile_dir, profile_name)
-        self.update(read_config(self.filename))
+        self.active=False
+
+    def set_active(self, active):
+        self.active=active
 
     def active(self):
-        return os.path.isfile(os.path.join(state_dir,self.name))
+        return self.active
+
+    def inactive(self):
+        return not self.active
 
 

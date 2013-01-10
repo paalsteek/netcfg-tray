@@ -84,7 +84,8 @@ class NetcfgTray (object):
         menu.append(item)
         
         for prof in netcfg.get_active_profiles():
-            item = gtk.MenuItem(label=prof.name+": "+prof["INTERFACE"]+" connected")
+            item = gtk.MenuItem(label=prof.name+": "+" connected")
+            #item = gtk.MenuItem(label=prof.name+": "+prof["INTERFACE"]+" connected")
             item.connect('activate', self.profile_action, prof, "down")
             menu.append(item)
   
@@ -111,7 +112,7 @@ class NetcfgTray (object):
                 item = gtk.MenuItem(label="Enable automatic "+connection+" ("+interface+")")
                 item.connect('activate', self.profile_action, "start", "auto-"+connection)
 
-    	    menu.append(item)            
+            menu.append(item)            
     
             
     def menu_inactive(self, menu):
@@ -121,11 +122,10 @@ class NetcfgTray (object):
         item.set_sensitive(False)
         menu.append(item)
            
-        for prof in netcfg.get_profiles():
-            if not prof in netcfg.get_active_profiles():
-                item = gtk.MenuItem(label=prof.name)
-                item.connect('activate', self.profile_action, prof, "up")
-                menu.append(item)
+        for prof in netcfg.get_inactive_profiles():
+            item = gtk.MenuItem(label=prof.name)
+            item.connect('activate', self.profile_action, prof, "up")
+            menu.append(item)
 
 
     def popup_menu(self, widget, button, time):
@@ -141,6 +141,7 @@ class NetcfgTray (object):
         """Loop through all menu objects to populate main menu"""
         self.clear_menu()
             
+        netcfg.update_profiles()
         for section in self.menu_sections:
             # Each section is built by a separate command, run each passing the menu item
             section(self.menu)
@@ -219,6 +220,7 @@ class NetcfgTray (object):
         if self.action: # If icon has already been set by something else...
             return
         
+        netcfg.update_profiles()
         profiles = netcfg.get_active_profiles()
         if profiles:
             names = [ n.name for n in profiles ]
