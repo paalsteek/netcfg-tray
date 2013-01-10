@@ -1,13 +1,15 @@
 #! /bin/bash
 
+. /usr/lib/network/globals
 . /usr/lib/network/network
-. /etc/rc.d/functions
 
 # Override output with silence, the GUI is not interested in this pretty printing.
-stat_busy() { true; }
-stat_fail() { true; }
-stat_append() { true; }
-status() { true; }
+report_err() { true; }
+report_notice() { true; }
+report_debug() { true; }
+report_try() { true; }
+report_success() { true; }
+#status() { true; }
 
 while [[ $1 == * ]]; do
     case "$1" in

@@ -20,7 +20,10 @@ def read_config(config):
 
 
 def read_rcconf(variable):
-    rc=open("/etc/rc.conf")
+    if os.path.exists("/etc/conf.d/netcfg"):
+      rc=open("/etc/conf.d/netcfg")
+    elif os.path.exists("/etc/rc.conf"):
+      rc=open("/etc/rc.conf")
     for line in rc.readlines():
         line=line.strip()
         if line[:len(variable)] == variable:
