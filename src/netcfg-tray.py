@@ -16,8 +16,9 @@ helper_cmd="netcfg-tray-helper"
 
 # create a list of user and system wide configs
 config_list = [os.path.join(os.environ["XDG_CONFIG_HOME"], "netcfg-tray/config")]
-for xdg_path in os.environ["XDG_CONFIG_DIRS"]:
-    config_list.append(os.path.join(xdg_path, "netcfg-tray/config"))
+if "XDG_CONFIG_DIRS" in os.environ:
+    for xdg_path in os.environ["XDG_CONFIG_DIRS"]:
+        config_list.append(os.path.join(xdg_path, "netcfg-tray/config"))
 
 # get the first valid config file
 config_file = None
